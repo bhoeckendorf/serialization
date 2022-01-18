@@ -1,0 +1,3 @@
+blosc
+cloudpickle
+numpy
