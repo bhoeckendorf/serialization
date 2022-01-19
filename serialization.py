@@ -29,6 +29,13 @@ if _PACK_FNS is None:
     except ModuleNotFoundError:
         pass
 
+    try:
+        from ._pil import get_pack_fn as _pack_pl, get_unpack_fn as _unpack_pl
+        _PACK_FNS.append(_pack_pl)
+        _UNPACK_FNS.append(_unpack_pl)
+    except ModuleNotFoundError:
+        pass
+
 
 def _get_pack_fn(x: Any) -> Optional[Callable]:
     for fn in _PACK_FNS:
