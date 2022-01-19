@@ -47,48 +47,29 @@ def _get_unpack_fn(x: Any) -> Optional[Callable]:
 
 
 def pack(x, **kwargs):
-    if isinstance(x, (list, tuple)):
-        for i, v in enumerate(x):
-            _pack(x, i, v, **kwargs)
-    elif isinstance(x, dict):
-        for i, v in x.items():
-            _pack(x, i, v, **kwargs)
+    if isinstance(x, dict):
+        return {k: pack(v, **kwargs) for k, v in x.items()}
+    elif isinstance(x, list):
+        return [pack(i, **kwargs) for i in x]
+    elif isinstance(x, tuple):
+        return tuple(pack(i, **kwargs) for i in x)
     fn = _get_pack_fn(x)
     if fn is not None:
         return fn(x)
     return x
 
 
-def _pack(x, i, v, **kwargs):
-    if isinstance(v, (dict, list)):
-        pack(v, **kwargs)
-    elif isinstance(v, tuple):
-        x[i] = list(v)
-        pack(x[i], **kwargs)
-    fn = _get_pack_fn(v)
-    if fn is not None:
-        x[i] = fn(v)
-
-
 def unpack(x):
-    if isinstance(x, list):
-        for i, v in enumerate(x):
-            _unpack(x, i, v)
-    elif isinstance(x, dict):
-        for i, v in x.items():
-            _unpack(x, i, v)
+    if isinstance(x, dict):
+        return {k: unpack(v) for k, v in x.items()}
+    elif isinstance(x, list):
+        return [unpack(i) for i in x]
+    elif isinstance(x, tuple):
+        return tuple(unpack(i) for i in x)
     fn = _get_unpack_fn(x)
     if fn is not None:
         return fn(x)
     return x
-
-
-def _unpack(x, i, v):
-    if isinstance(v, (dict, list)):
-        unpack(v)
-    fn = _get_unpack_fn(v)
-    if fn is not None:
-        x[i] = unpack(v)
 
 
 def sign(x, key):
@@ -110,16 +91,7 @@ def serialize(
         clevel=9,
         **kwargs
 ):
-    x = deepcopy(x)
-
-    if isinstance(x, tuple):
-        x = list(x)
-
-    if isinstance(x, (dict, list)):
-        pack(x, cname=cname, clevel=clevel, **kwargs)
-    else:
-        x = pack(x, cname=cname, clevel=clevel, **kwargs)
-    x = pickle.dumps(x)
+    x = pickle.dumps(pack(x, cname=cname, clevel=clevel, **kwargs))
 
     if maxsize is None:
         if key is None:
@@ -141,7 +113,4 @@ def deserialize(x, key):
             x = verify(x, key)
         x = pickle.loads(x)
 
-    if isinstance(x, (dict, list)):
-        unpack(x)
-        return x
     return unpack(x)

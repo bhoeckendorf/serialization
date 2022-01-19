@@ -13,23 +13,34 @@ def test_numpy():
     data = [
         1, "2", arr,
         [3, "4", deepcopy(arr), {"arr": deepcopy(arr)}],
-        {4: "5", "6": 7, "arr": deepcopy(arr), "lst": [deepcopy(arr)]}
+        {4: "5", "6": 7, "arr": deepcopy(arr), "lst": [deepcopy(arr)]},
+        (3, "4", deepcopy(arr), {"arr": deepcopy(arr)})
     ]
     datapkl = pickle.dumps(data)
 
     for key in (None, "key".encode()):
         ser = serialization.serialize(arr, key)
+        assert isinstance(arr, np.ndarray)
+        assert isinstance(ser, bytes)
         assert len(ser) < 0.5 * len(arrpkl)
         deser = serialization.deserialize(ser, key)
+        assert isinstance(arr, np.ndarray)
+        assert isinstance(ser, bytes)
+        assert isinstance(deser, np.ndarray)
         assert np.all(arr == deser)
 
         ser = serialization.serialize(data, key)
+        assert isinstance(ser, bytes)
         assert isinstance(data[2], np.ndarray)
         assert isinstance(data[3][2], np.ndarray)
         assert isinstance(data[4]["arr"], np.ndarray)
         assert len(ser) < len(datapkl)
         assert len(ser) < len(arrpkl)
         deser = serialization.deserialize(ser, key)
+        assert isinstance(deser[2], np.ndarray)
+        assert isinstance(deser[3][2], np.ndarray)
+        assert isinstance(deser[4]["arr"], np.ndarray)
+        assert isinstance(deser[-1], tuple)
         assert np.all(deser[2] == arr)
         assert np.all(deser[3][2] == arr)
         assert np.all(deser[3][3]["arr"] == arr)

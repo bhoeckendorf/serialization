@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Any, Optional, Union, Callable
 
 import xarray as xr
@@ -19,6 +20,7 @@ def get_unpack_fn(x: Any) -> Optional[Callable]:
 
 
 def pack(x: Union[xr.DataArray, xr.Dataset], **kwargs) -> Union[xr.DataArray, xr.Dataset]:
+    x = deepcopy(x)
     if isinstance(x, xr.Dataset):
         for v in x.values():
             fn = _get_pack_fn(v._variable._data)
