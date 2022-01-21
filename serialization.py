@@ -1,8 +1,7 @@
 from copy import deepcopy
 import hashlib as hashlib
+import pickle
 from typing import Any, Optional, Callable
-
-import cloudpickle as pickle
 
 _PACK_FNS = None
 _UNPACK_FNS = None

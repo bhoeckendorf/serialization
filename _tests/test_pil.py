@@ -1,6 +1,6 @@
 import numpy as np
 from PIL import Image 
-import cloudpickle as pickle
+import pickle
 import serialization
 from copy import deepcopy
 import pytest

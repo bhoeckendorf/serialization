@@ -1,5 +1,5 @@
 import numpy as np
-import cloudpickle as pickle
+import pickle
 import serialization
 from copy import deepcopy
 import pytest

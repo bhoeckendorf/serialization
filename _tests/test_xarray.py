@@ -1,6 +1,6 @@
 import numpy as np
 import xarray as xr
-import cloudpickle as pickle
+import pickle
 import serialization
 from copy import deepcopy
 import pytest
